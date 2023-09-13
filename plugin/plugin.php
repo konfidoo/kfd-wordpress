@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 add_action( 'wp_head', 'my_header_scripts' );
 function my_header_scripts(){
 	?>
-	<script src="https://dev.konfidoo.de/elements/loader.js"></script>
+	<script src="https://dev.konfidoo.de/elements/v01/main.js"></script>
 	<?php
 }
 

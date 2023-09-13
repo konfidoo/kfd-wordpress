@@ -170,11 +170,11 @@ registerBlockType( 'cgb/block-konfidoo', {
 					<kfd-intro
 						project={ props.attributes.projectId }
 						configuration={ props.attributes.configurationId }
-						seamless="true"
 						title={ props.attributes.configTitle }
 						subtitle={ props.attributes.configSubtitle }
 						btntext={ props.attributes.configBtnText }
 						btncls={ props.attributes.configBtnCls }
+						seamless="true"
 					></kfd-intro>
 				</div>
 			);
@@ -186,6 +186,10 @@ registerBlockType( 'cgb/block-konfidoo', {
 					<kfd-modal
 						project={ props.attributes.projectId }
 						configuration={ props.attributes.configurationId }
+						title={ props.attributes.configTitle }
+						subtitle={ props.attributes.configSubtitle }
+						btntext={ props.attributes.configBtnText }
+						btncls={ props.attributes.configBtnCls }
 						seamless="true"
 					></kfd-modal>
 				</div>
@@ -194,11 +198,11 @@ registerBlockType( 'cgb/block-konfidoo', {
 
 		return (
 			<div>
-				<kfd-form
+				<kfd-inline
 					project={ props.attributes.projectId }
 					configuration={ props.attributes.configurationId }
 					seamless="true"
-				></kfd-form>
+				></kfd-inline>
 			</div>
 		);
 	},
