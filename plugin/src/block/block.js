@@ -36,13 +36,13 @@ registerBlockType( 'cgb/block-konfidoo', {
 		__( 'konfidoo — Form Integration' ),
 	],
 	attributes: {
-		type: {  enum: [ 'form', 'intro', 'modal' ], default: 'form' },
+		type: {  enum: [ 'form' ], default: 'form' },
 		projectId: { type: 'string', default: '' },
 		configurationId: { type: 'string', default: '' },
-		configTitle: { type: 'string', default: '' },
-		configSubtitle: { type: 'string', default: '' },
-		configBtnText: { type: 'string', default: '' },
-		configBtnCls: { type: 'string', default: '' },
+		// configTitle: { type: 'string', default: '' },
+		// configSubtitle: { type: 'string', default: '' },
+		// configBtnText: { type: 'string', default: '' },
+		// configBtnCls: { type: 'string', default: '' },
 	},
 	edit: ( {attributes, setAttributes} ) => {
 
@@ -88,8 +88,8 @@ registerBlockType( 'cgb/block-konfidoo', {
 								value={ attributes.type }
 								options={ [
 									{ label: 'Normal', value: 'form' },
-									{ label: 'Intro', value: 'intro' },
-									{ label: 'Popup', value: 'modal' },
+									// { label: 'Intro', value: 'intro' },
+									// { label: 'Popup', value: 'modal' },
 								] }
 								onChange={ ( value ) => setAttributes( { type: value } ) }
 								__nextHasNoMarginBottom
