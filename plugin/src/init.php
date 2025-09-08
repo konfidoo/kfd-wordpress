@@ -60,6 +60,7 @@ function konfidoo_cgb_block_assets() { // phpcs:ignore
 		[
 			'pluginDirPath' => plugin_dir_path( __DIR__ ),
 			'pluginDirUrl'  => plugin_dir_url( __DIR__ ),
+			'globalProjectId' => get_option( 'kfd_project_id', '' ),
 			// Add more data here that you want to access from `cgbGlobal` object.
 		]
 	);

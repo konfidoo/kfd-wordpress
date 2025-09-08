@@ -29,3 +29,8 @@ function my_header_scripts(){
  * Block Initializer.
  */
 require_once plugin_dir_path( __FILE__ ) . 'src/init.php';
+
+/**
+ * Admin Settings.
+ */
+require_once plugin_dir_path( __FILE__ ) . 'admin-settings.php';
