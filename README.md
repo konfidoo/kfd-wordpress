@@ -35,11 +35,11 @@ The global Project ID configured here will be used as a fallback when individual
 ### Automatic Builds
 Every time the main branch is updated, a new plugin zip file is automatically built and made available for download.
 
-- **[Download the latest kfd-wordpress.zip from GitHub Actions artifacts](https://github.com/konfidoo/kfd-wordpress/actions/workflows/build-plugin.yml?query=branch%3Amain)**
+**[📥 Download Latest Plugin](https://github.com/konfidoo/kfd-wordpress/actions/workflows/build-plugin.yml?query=branch%3Amain)**
 
 ### How to Install
-1. Go to the [GitHub Actions page](https://github.com/konfidoo/kfd-wordpress/actions/workflows/build-plugin.yml?query=branch%3Amain) for this repository
-2. Click on the latest successful build (green checkmark)
+1. Go to the [GitHub Actions page](https://github.com/konfidoo/kfd-wordpress/actions/workflows/build-plugin.yml?query=branch%3Amain)
+2. Click on the latest successful build (green checkmark ✅)
 3. Scroll down to the "Artifacts" section and download `kfd-wordpress`
 4. Extract the downloaded zip file to get `kfd-wordpress.zip`
 5. In your WordPress Admin, go to **Plugins → Add New** and click **Upload Plugin**
@@ -50,6 +50,6 @@ Every time the main branch is updated, a new plugin zip file is automatically bu
 For development or if you want to build from source:
 1. Clone this repository
 2. Navigate to the `plugin` directory
-3. Run `npm install` and `npm run build`
+3. Run `npm install` and `npm run build` (requires Node.js 14)
 4. Copy the entire plugin directory to your WordPress `/wp-content/plugins/` folder
 5. Activate the plugin in your WordPress admin
