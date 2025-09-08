@@ -15,6 +15,16 @@ const { __ } = wp.i18n; // Import __() from wp.i18n
 const { registerBlockType } = wp.blocks; // Import registerBlockType() from wp.blocks
 
 /**
+ * Helper function to get effective Project ID (block-specific or global fallback)
+ * @param {string} blockProjectId - The block-specific project ID
+ * @returns {string} The effective project ID to use
+ */
+function getEffectiveProjectId( blockProjectId ) {
+	const globalProjectId = cgbGlobal && cgbGlobal.globalProjectId ? cgbGlobal.globalProjectId : '';
+	return blockProjectId || globalProjectId;
+}
+
+/**
  * Register: aa Gutenberg Block.
  *
  * Registers a new block provided a unique name and an object defining its
@@ -50,7 +60,7 @@ registerBlockType( 'cgb/block-konfidoo', {
 		const globalProjectId = cgbGlobal && cgbGlobal.globalProjectId ? cgbGlobal.globalProjectId : '';
 		
 		// Use block-specific projectId or fall back to global
-		const effectiveProjectId = attributes.projectId || globalProjectId;
+		const effectiveProjectId = getEffectiveProjectId( attributes.projectId );
 
 		// const isSidebarOpened = wp.data.select( 'core/edit-post' ).isEditorSidebarOpened();
 		//
@@ -168,11 +178,8 @@ registerBlockType( 'cgb/block-konfidoo', {
 		);
 	},
 	save: ( props ) => {
-		// Get global Project ID from wp_localize_script
-		const globalProjectId = cgbGlobal && cgbGlobal.globalProjectId ? cgbGlobal.globalProjectId : '';
-		
 		// Use block-specific projectId or fall back to global
-		const effectiveProjectId = props.attributes.projectId || globalProjectId;
+		const effectiveProjectId = getEffectiveProjectId( props.attributes.projectId );
 		
 		if (!effectiveProjectId || !props.attributes.configurationId) {
 			return;
