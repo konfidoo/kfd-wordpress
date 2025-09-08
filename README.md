@@ -29,3 +29,13 @@ The global Project ID configured here will be used as a fallback when individual
  1. `cd plugin`
  1. `npm i`
  1. `npm build`
+
+## Download & Installation
+
+- [Download the latest ready-to-use plugin zip from GitHub Actions artifacts.](https://github.com/konfidoo/kfd-wordpress/actions?query=branch%3Amain)
+
+### How to Install
+1. Download the latest `kfd-wordpress.zip` from the link above.
+2. In your WordPress Admin, go to **Plugins → Add New** and click **Upload Plugin**.
+3. Select the downloaded zip file and click **Install Now**.
+4. Activate the plugin once installation is complete.
