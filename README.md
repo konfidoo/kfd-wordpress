@@ -1,6 +1,16 @@
 # kfd-wordpress
 Wordpress integration for konfidoo
 
+## Features
+- WordPress Gutenberg block for integrating konfidoo forms
+- Admin settings page for configuring global Project ID
+- Automatic fallback to global Project ID when block-specific ID is not set
+
+## Settings
+After activating the plugin, you can configure global settings by navigating to:
+**WordPress Admin → Settings → konfidoo**
+
+The global Project ID configured here will be used as a fallback when individual blocks don't have a specific Project ID set.
 
 # Development
  1. `cd plugin`
