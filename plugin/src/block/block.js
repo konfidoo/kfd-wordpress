@@ -46,6 +46,11 @@ registerBlockType( 'cgb/block-konfidoo', {
 	},
 	edit: ( {attributes, setAttributes} ) => {
 
+		// Helper function to get the effective Project ID (block-specific or global fallback)
+		const getEffectiveProjectId = () => {
+			return attributes.projectId || (cgbGlobal && cgbGlobal.globalProjectId) || '';
+		};
+
 		// const isSidebarOpened = wp.data.select( 'core/edit-post' ).isEditorSidebarOpened();
 		//
 		// if ( !isSidebarOpened ) {
@@ -67,6 +72,7 @@ registerBlockType( 'cgb/block-konfidoo', {
 							<TextControl
 								label="Project ID"
 								value={ attributes.projectId }
+								placeholder={ cgbGlobal && cgbGlobal.globalProjectId ? `Global: ${cgbGlobal.globalProjectId}` : 'Enter Project ID' }
 								onChange={ ( value ) => setAttributes( { projectId: value } ) }
 							/>
 						</PanelRow>
@@ -131,28 +137,31 @@ registerBlockType( 'cgb/block-konfidoo', {
 				</InspectorControls>
 				<div className="wp-block-kfd-placeholder">
 					<div className="title">konfidoo</div>
-					{ attributes.projectId && attributes.configurationId && (
+					{ getEffectiveProjectId() && attributes.configurationId && (
 						<div>
 							<strong>Project: </strong>
-							{attributes.projectId}
+							{getEffectiveProjectId()}
+							{!attributes.projectId && cgbGlobal && cgbGlobal.globalProjectId && (
+								<span style={{color: '#666', fontSize: '0.9em'}}> (Global)</span>
+							)}
 							<br/>
 							<strong>Konfiguration: </strong>
 							{attributes.configurationId}
 							<br/>
-							<a href={'https://dev.konfidoo.de/cms/mandant/' + attributes.projectId} target="_blank">
+							<a href={'https://dev.konfidoo.de/cms/mandant/' + getEffectiveProjectId()} target="_blank">
 								Projekt öffnen</a>
 							{/*<button onClick={openSettingsSidebar}>*/}
 							{/*	Activate Lasers*/}
 							{/*</button>*/}
 						</div>
 						) }
-					{ !attributes.projectId && (
-						<div>Bitte eine Projekt ID angeben</div>
+					{ !getEffectiveProjectId() && (
+						<div>Bitte eine Projekt ID angeben{cgbGlobal && cgbGlobal.globalProjectId ? ' oder in den Plugin-Einstellungen konfigurieren' : ''}</div>
 					) }
 					{ !attributes.configurationId && (
 						<div>Bitte eine Konfigurations ID angeben</div>
 					) }
-					{( !attributes.projectId && ! !attributes.configurationId) && (
+					{( !getEffectiveProjectId() && ! !attributes.configurationId) && (
 						<p>Open the settings sidebar to configure the integration</p>
 					) }
 				</div>
@@ -160,7 +169,14 @@ registerBlockType( 'cgb/block-konfidoo', {
 		);
 	},
 	save: ( props ) => {
-		if (!props.attributes.projectId || !props.attributes.configurationId) {
+		// Helper function to get the effective Project ID (block-specific or global fallback)
+		const getEffectiveProjectId = () => {
+			return props.attributes.projectId || (cgbGlobal && cgbGlobal.globalProjectId) || '';
+		};
+
+		const effectiveProjectId = getEffectiveProjectId();
+		
+		if (!effectiveProjectId || !props.attributes.configurationId) {
 			return;
 		}
 
@@ -168,7 +184,7 @@ registerBlockType( 'cgb/block-konfidoo', {
 			return (
 				<div>
 					<kfd-intro
-						project={ props.attributes.projectId }
+						project={ effectiveProjectId }
 						configuration={ props.attributes.configurationId }
 						title={ props.attributes.configTitle }
 						subtitle={ props.attributes.configSubtitle }
@@ -184,7 +200,7 @@ registerBlockType( 'cgb/block-konfidoo', {
 			return (
 				<div>
 					<kfd-modal
-						project={ props.attributes.projectId }
+						project={ effectiveProjectId }
 						configuration={ props.attributes.configurationId }
 						title={ props.attributes.configTitle }
 						subtitle={ props.attributes.configSubtitle }
@@ -199,7 +215,7 @@ registerBlockType( 'cgb/block-konfidoo', {
 		return (
 			<div>
 				<kfd-inline
-					project={ props.attributes.projectId }
+					project={ effectiveProjectId }
 					configuration={ props.attributes.configurationId }
 					seamless="true"
 				></kfd-inline>
