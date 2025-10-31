@@ -57,12 +57,12 @@ function konfidoo_cgb_block_assets() { // phpcs:ignore
 	wp_localize_script(
 		'konfidoo-cgb-block-js',
 		'cgbGlobal', // Array containing dynamic data for a JS Global.
-		[
+		array(
 			'pluginDirPath' => plugin_dir_path( __DIR__ ),
 			'pluginDirUrl'  => plugin_dir_url( __DIR__ ),
 			'globalProjectId' => get_option( 'kfd_project_id', '' ),
 			// Add more data here that you want to access from `cgbGlobal` object.
-		]
+		)
 	);
 
 	/**

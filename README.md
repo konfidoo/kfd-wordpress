@@ -47,3 +47,4 @@ Fehlerbehebung
 Support
 
 1. Issues im GitHub Repository öffnen: `https://github.com/konfidoo/kfd-wordpress/issues`
+

@@ -1,3 +1,5 @@
+@import '../common.scss';
+
 /**
  * #.# Editor Styles
  *
@@ -5,7 +7,7 @@
  * which makes it higher in priority.
  */
 
-.wp-block-kfd-placeholder  {
+.wp-block-kfd-placeholder {
   background: rgba(85, 176, 218, 0.33);
   border: 0.2rem solid $black;
   color: $black;
@@ -14,6 +16,6 @@
   padding: 2rem;
 
   .title {
-	font-size: 2rem;
+    font-size: 2rem;
   }
 }

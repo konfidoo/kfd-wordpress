@@ -1,0 +1,59 @@
+name: Build plugin
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    types: [ closed ]
+
+jobs:
+  build:
+    # Only run for direct pushes or for PRs that were merged
+    if: github.event_name != 'pull_request' || (github.event.pull_request.merged == true)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: plugin/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('plugin/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        working-directory: ./plugin
+        run: npm ci
+
+      - name: Build plugin assets
+        working-directory: ./plugin
+        run: npm run build --if-present
+
+      - name: Create zip archive
+        working-directory: ./plugin
+        run: |
+          # use the repository zip script which excludes node_modules and .git
+          if [ -x ./zip.sh ]; then
+            ./zip.sh
+          else
+            zip -r ../kfd-wordpress.zip . -x "node_modules/*" ".git/*"
+          fi
+
+      - name: Verify ZIP contains src/init.php
+        run: |
+          unzip -l kfd-wordpress.zip | grep 'src/init.php' || (echo 'ERROR: src/init.php is missing in the ZIP' && exit 1)
+
+      - name: Upload ZIP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kfd-wordpress
+          path: kfd-wordpress.zip
+

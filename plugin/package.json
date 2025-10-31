@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "cgb-scripts start",
-    "build": "cgb-scripts build",
-    "eject": "cgb-scripts eject"
+    "start": "wp-scripts start",
+    "build": "wp-scripts build",
+    "eject": "wp-scripts eject"
   },
   "dependencies": {
-    "cgb-scripts": "1.23.1"
+    "@wordpress/scripts": "^24.0.0"
   }
 }
