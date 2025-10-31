@@ -1,50 +1,62 @@
-# Konfidoo Wordpress Integration
+# Konfidoo WordPress Integration
 
-WordPress Plugin für konfidoo Formulare
+![Konfidoo Logo](logo_konfidoo.svg)
 
-1. Fügt einen Gutenberg\-Block hinzu, um konfidoo Formulare in Beiträge/Seiten einzubetten.
-1. Globale Project ID in den Plugin\-Einstellungen als Fallback konfigurierbar.
+WordPress-Plugin zur Einbettung von konfidoo-Formularen über einen Gutenberg-Block.
 
-Funktionen
+## Kurzbeschreibung
 
-1. Gutenberg Block für konfidoo Formulare
-1. Admin\-Seite: globale Project ID
-1. Automatischer Fallback auf globale Project ID, wenn Block keine ID hat
+Dieses Plugin fügt einen Gutenberg‑Block hinzu, mit dem konfidoo‑Formulare in Beiträge und Seiten eingebettet werden
+können. Zusätzlich lässt sich eine globale Project‑ID in den Plugin‑Einstellungen als Fallback konfigurieren.
 
-Automatischer Download (empfohlen)
+## Funktionen
 
-1. Gehe zur GitHub Actions Seite des Projekts:
-   `https://github.com/konfidoo/kfd-wordpress/actions/workflows/build-plugin.yml?query=branch%3Amain`
-1. Öffne den neuesten erfolgreichen Build (grünes Häkchen)
-1. Im Abschnitt "Artifacts" die Datei `kfd-wordpress.zip` herunterladen
-1. Die Datei bleibt das Release\-Artifact; herunterladen und weiter mit Installation
+- Gutenberg‑Block zur einfachen Einbettung von konfidoo‑Formularen
+- Admin‑Einstellungsseite: globale Project‑ID als Fallback
+- Block‑instanz kann eine spezifische Project‑ID überschreiben
 
-Installation über WordPress Admin (ZIP)
+## Installation (empfohlen: Release ZIP)
 
-1. WordPress Admin öffnen
-1. `Plugins` → `Installieren` → `Plugin hochladen`
-1. `kfd-wordpress.zip` auswählen und auf `Installieren` klicken
-1. Nach der Installation `Aktivieren`
+1. Automatischer Download (empfohlen):
+    - https://github.com/konfidoo/kfd-wordpress/releases/latest/download/kfd-wordpress.zip
+    - Öffne das neueste erfolgreiche Build (grünes Häkchen) und lade das Artifact `kfd-wordpress.zip` herunter.
+    - Im WordPress Admin: `Plugins` → `Installieren` → `Plugin hochladen` → `kfd-wordpress.zip` auswählen und
+      installieren.
+2. Manuell über WordPress Admin (ZIP):
+    - WordPress Admin öffnen
+    - `Plugins` → `Installieren` → `Plugin hochladen`
+    - `kfd-wordpress.zip` auswählen und installieren
+    - Nach der Installation: `Aktivieren`
 
-Erste Konfiguration
+## Erste Konfiguration
 
-1. WordPress Admin → `Einstellungen` → `konfidoo`
-1. Trage die globale Project ID ein (wird als Fallback verwendet)
-1. Beim Einfügen des Blocks kann für jede Instanz eine spezifische Project ID gesetzt werden
+- WordPress Admin → `Einstellungen` → `konfidoo`
+- Trage hier eine globale Project‑ID ein (wird als Fallback verwendet, falls ein Block keine ID besitzt)
+- Beim Einfügen des Blocks kann für jede Block‑Instanz eine eigene Project‑ID angegeben werden
 
-Block Nutzung
+## Block‑Nutzung
 
 1. Beitrag/Seite bearbeiten
-1. Gutenberg Block Liste öffnen und `konfidoo` Block auswählen
-1. Project ID eingeben (optional) und Block speichern
+2. Gutenberg Block Liste öffnen und den `konfidoo`‑Block auswählen
+3. Optional: Project‑ID im Block eintragen (wenn leer, wird die globale Project‑ID verwendet)
+4. Block speichern und Beitrag/Seite aktualisieren
 
-Fehlerbehebung
+## Fehlerbehebung
 
-1. Kein Formular sichtbar: Prüfe, ob Project ID gesetzt ist (Block oder global)
-1. Plugin nicht aktivierbar: PHP Version und Berechtigungen prüfen
-1. Lokale Tests: Browser DevTools auf Fehler prüfen
+- Kein Formular sichtbar: Prüfe, ob eine Project‑ID gesetzt ist (Block‑Einstellung oder globale Einstellung)
+- Plugin lässt sich nicht aktivieren: PHP‑Version, Dateiberechtigungen und Fehler im WordPress‑Error‑Log prüfen
+- Lokale Tests: Browser DevTools (Konsole/Netzwerk) auf Fehler prüfen
 
-Support
+## Entwicklung
 
-1. Issues im GitHub Repository öffnen: `https://github.com/konfidoo/kfd-wordpress/issues`
+- Quellcode befindet sich im Repository (Ordner `plugin/` und `src/`).
+- Build/Assets: `build/` enthält vorgefertigte Assets.
+- Hinweise für Entwickler: siehe `docs/developer.md`.
 
+## Support
+
+- Issues öffnen: https://github.com/konfidoo/kfd-wordpress/issues
+
+## Lizenz
+
+- Siehe das Repository für Lizenzinformationen.

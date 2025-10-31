@@ -5,7 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     types: [ closed ]
-  workflow_dispatch: {}
+  workflow_dispatch: { }
 
 jobs:
   build:
@@ -52,12 +52,10 @@ jobs:
         run: |
           unzip -l kfd-wordpress.zip | grep 'src/init.php' || (echo 'ERROR: src/init.php is missing in the ZIP' && exit 1)
 
-      - name: Upload plugin directory as artifact (avoid nested zip)
+      - name: Upload plugin ZIP as artifact (exclude node_modules)
         uses: actions/upload-artifact@v4
         with:
           name: kfd-wordpress
-          # upload the plugin directory contents directly so the downloaded artifact
-          # doesn't contain a zip inside a zip — users only need to unzip once
-          path: plugin
-          # optional: keep the artifact for 7 days (default); change if needed
+          # upload the generated ZIP (this excludes node_modules via the zip step)
+          path: kfd-wordpress.zip
           retention-days: 7
