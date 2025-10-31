@@ -14,11 +14,17 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Setup Python 2.7
-      uses: actions/setup-python@v4
-      with:
-        python-version: '2.7'
-        
+    - name: Install Python 2 (manual)
+      run: |
+        sudo apt-get update
+        # Install python2 on Ubuntu 22.04 (package available in universe)
+        sudo apt-get install -y python2 python2-dev || true
+        # Optionally make /usr/bin/python point to python2 if needed by scripts
+        if [ ! -e /usr/bin/python ]; then
+          sudo ln -s $(which python2) /usr/bin/python || true
+        fi
+        python --version || python2 --version
+
     - name: Setup Node.js 14
       uses: actions/setup-node@v4
       with:
