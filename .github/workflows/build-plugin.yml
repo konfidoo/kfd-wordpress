@@ -8,8 +8,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04  # Use older Ubuntu for better compatibility
-    
+    runs-on: ubuntu-22.04  # Use a modern GitHub-hosted runner (ubuntu-22.04) so a hosted runner is available
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
