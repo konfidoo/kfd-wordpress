@@ -28,29 +28,32 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.0.0
  */
 function konfidoo_cgb_block_assets() { // phpcs:ignore
+	// Path to the generated asset file which contains dependencies and version.
+	$asset_file = include plugin_dir_path( __FILE__ ) . 'build/index.asset.php';
+
 	// Register block styles for both frontend + backend.
 	wp_register_style(
 		'konfidoo-cgb-style-css', // Handle.
-		plugins_url( 'dist/blocks.style.build.css', dirname( __FILE__ ) ), // Block style CSS.
+		plugins_url( 'build/style-index.css', dirname( __FILE__ ) ), // Block style CSS (frontend + backend).
 		is_admin() ? array( 'wp-editor' ) : null, // Dependency to include the CSS after it.
-		null // filemtime( plugin_dir_path( __DIR__ ) . 'dist/blocks.style.build.css' ) // Version: File modification time.
+		isset( $asset_file['version'] ) ? $asset_file['version'] : null
 	);
 
-	// Register block editor script for backend.
+	// Register block editor script for backend. Use asset file for deps & version.
 	wp_register_script(
 		'konfidoo-cgb-block-js', // Handle.
-		plugins_url( '/dist/blocks.build.js', dirname( __FILE__ ) ), // Block.build.js: We register the block here. Built with Webpack.
-		array( 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-editor' ), // Dependencies, defined above.
-		null, // filemtime( plugin_dir_path( __DIR__ ) . 'dist/blocks.build.js' ), // Version: filemtime — Gets file modification time.
+		plugins_url( 'build/index.js', dirname( __FILE__ ) ), // Built block JS.
+		isset( $asset_file['dependencies'] ) ? $asset_file['dependencies'] : array( 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-editor' ), // Dependencies.
+		isset( $asset_file['version'] ) ? $asset_file['version'] : null, // Version: from asset file.
 		true // Enqueue the script in the footer.
 	);
 
 	// Register block editor styles for backend.
 	wp_register_style(
 		'konfidoo-cgb-block-editor-css', // Handle.
-		plugins_url( 'dist/blocks.editor.build.css', dirname( __FILE__ ) ), // Block editor CSS.
+		plugins_url( 'build/index.css', dirname( __FILE__ ) ), // Block editor CSS.
 		array( 'wp-edit-blocks' ), // Dependency to include the CSS after it.
-		null // filemtime( plugin_dir_path( __DIR__ ) . 'dist/blocks.editor.build.css' ) // Version: File modification time.
+		isset( $asset_file['version'] ) ? $asset_file['version'] : null
 	);
 
 	// WP Localized globals. Use dynamic PHP stuff in JavaScript via `cgbGlobal` object.
@@ -65,16 +68,9 @@ function konfidoo_cgb_block_assets() { // phpcs:ignore
 		)
 	);
 
-	/**
-	 * Register Gutenberg block on server-side.
-	 *
-	 * Register the block on server-side to ensure that the block
-	 * scripts and styles for both frontend and backend are
-	 * enqueued when the editor loads.
-	 *
-	 * @link https://wordpress.org/gutenberg/handbook/blocks/writing-your-first-block-type#enqueuing-block-scripts
-	 * @since 1.16.0
-	 */
+	// Register the block on server-side to ensure that the block
+	// scripts and styles for both frontend and backend are
+	// enqueued when the editor loads.
 	register_block_type(
 		'cgb/block-konfidoo', array(
 			// Enqueue blocks.style.build.css on both frontend & backend.

@@ -37,7 +37,7 @@ function konfidoo_settings_init() {
 	// Add settings section
 	add_settings_section(
 		'konfidoo_settings_section',
-		__( 'Global Project Configuration', 'konfidoo' ),
+		__( 'Konfidoo Forms Configuration', 'konfidoo' ),
 		'konfidoo_settings_section_callback',
 		'konfidoo_settings'
 	);
@@ -58,8 +58,23 @@ add_action( 'admin_init', 'konfidoo_settings_init' );
  */
 function konfidoo_project_id_render() {
 	$project_id = get_option( 'kfd_project_id', '' );
+	$project_id_esc = esc_attr( $project_id );
+
+	// Build project URL only when a project ID exists
+	$project_url = '';
+	if ( ! empty( $project_id ) ) {
+		$project_url = 'https://cms.konfidoo.de/project/' . rawurlencode( $project_id ) . '/forms';
+	}
 	?>
-	<input type="text" name="kfd_project_id" value="<?php echo esc_attr( $project_id ); ?>" class="regular-text" />
+	<input type="text" name="kfd_project_id" value="<?php echo $project_id_esc; ?>" class="regular-text" />
+
+	<?php if ( $project_url ) : ?>
+		<p class="description">
+			<?php /* translators: %s: project URL */
+			printf( __( 'Project link: %s', 'konfidoo' ), '<a href="' . esc_url( $project_url ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $project_url ) . '</a>' ); ?>
+		</p>
+	<?php endif; ?>
+
 	<p class="description">
 		<?php _e( 'Enter the global Project ID that will be used as a fallback when no block-specific Project ID is set.', 'konfidoo' ); ?>
 	</p>
@@ -70,7 +85,17 @@ function konfidoo_project_id_render() {
  * Settings section callback
  */
 function konfidoo_settings_section_callback() {
-	echo '<p>' . __( 'Configure the global Project ID for konfidoo forms integration. This Project ID will be used as a fallback when individual blocks do not have a specific Project ID configured.', 'konfidoo' ) . '</p>';
+	$site_url = 'https://konfidoo.de';
+	$doc_url  = 'https://konfidoo.de/support/documentation';
+
+	$message = sprintf(
+		/* translators: 1: konfidoo.de URL, 2: documentation URL */
+		__( 'Note: To use the plugin, you must create a project and at least one form on <a href="%1$s" target="_blank" rel="noopener noreferrer">konfidoo.de</a>. Detailed instructions are available in the <a href="%2$s" target="_blank" rel="noopener noreferrer">documentation</a>.', 'konfidoo' ),
+		esc_url( $site_url ),
+		esc_url( $doc_url )
+	);
+
+	echo '<p>' . wp_kses( $message, array( 'a' => array( 'href' => array(), 'target' => array(), 'rel' => array() ) ) ) . '</p>';
 }
 
 /**

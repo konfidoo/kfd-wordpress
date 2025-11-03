@@ -39,7 +39,7 @@ Local development (step by step)
 4. Start the dev watcher: `npm run start` (this typically watches and rebuilds block JS/CSS on change).
 5. In a separate terminal (at project root) run: `docker-compose up` to start a local WordPress + database (if a Docker
    Compose config is provided).
-6. Open the local WordPress site (commonly `http://localhost:8080` or the URL defined in `docker-compose.yaml`).
+6. Open the local WordPress site (commonly `http://localhost:8180` or the URL defined in `docker-compose.yaml`).
 7. Make sure the plugin directory is available to the WordPress container. Options:
     - Copy the `plugin/` directory into the container's `wp-content/plugins/` directory.
     - Use a Docker volume in `docker-compose.yaml` that mounts the workspace `plugin/` into the container so changes are
@@ -56,9 +56,8 @@ Notes about development workflow
 
 Build & packaging
 
-This section describes the recommended commands to build the plugin, package it into a ZIP and verify the produced
-archive contains the PHP sources (especially `src/init.php`). Run these commands from the repository root or the
-`plugin/` directory as noted.
+This section describes the recommended commands to build the plugin and prepare the `plugin/build/package` folder that
+is used by CI. Run these commands from the repository root or the `plugin/` directory as noted.
 
 1) Change into the plugin directory and install dependencies (only the first time or when dependencies change):
 
@@ -75,86 +74,66 @@ npm run build
 
 The build creates production artifacts (for example in `plugin/build/`).
 
-3) Create the ZIP
+3) Prepare `plugin/build/package` (local / CI)
 
-The project contains a `zip.sh` in the `plugin/` folder. The script should exclude only large/irrelevant folders such as
-`node_modules` and the `.git` directory. Example content of `plugin/zip.sh`:
+Instead of creating a ZIP locally, copy the necessary files into `plugin/build/package`. This mirrors what the CI
+workflow does and avoids nested ZIPs or accidental inclusion of development files.
 
-```bash
-zip -r ../kfd-wordpress.zip . -x "node_modules/*" ".git/*"
-```
-
-Run the script:
+Example (run from `plugin/`):
 
 ```bash
-./zip.sh
+# clean and create package folder
+rm -rf build/package && mkdir -p build/package
+
+# copy repository files into build/package excluding development files
+rsync -a --delete \
+  --exclude='node_modules' \
+  --exclude='.git' \
+  --exclude='build' \
+  --exclude='package.json' \
+  --exclude='package-lock.json' \
+  --exclude='*.zip' \
+  --exclude='**/*.scss' \
+  ./ build/package/
 ```
 
-4) Verify the ZIP file and make sure `src/init.php` is included
-
-It is important that the PHP source files (for example `src/init.php`) are included in the ZIP — otherwise activating
-the plugin can cause a fatal error. Check the produced ZIP file:
+4) Verify the package contains the plugin entry (important for activation)
 
 ```bash
-# list archive contents (from plugin/ or repo root)
-unzip -l ../kfd-wordpress.zip
-
-# or check specifically for src/init.php
-unzip -l ../kfd-wordpress.zip | grep 'src/init.php' || echo 'ERROR: src/init.php is missing in the ZIP'
+# from repo root
+if [ ! -f plugin/build/package/src/init.php ]; then
+  echo 'ERROR: plugin/build/package/src/init.php is missing in the build' && exit 1
+fi
 ```
 
-If `src/init.php` is missing: adjust `zip.sh` so `src/` is not excluded and re-create the ZIP.
+5) Upload & activate the plugin (local option)
 
-5) Upload & activate the plugin
-
-- WP Admin Upload (easiest):
-  Plugins → Add New → Upload Plugin → Choose `kfd-wordpress.zip` → Install Now → Activate.
-
-- SCP/SSH (example, adjust paths and user):
+If you need to upload the plugin via the WP admin UI, create a ZIP from `plugin/build/package` before uploading:
 
 ```bash
-# Upload
-scp ../kfd-wordpress.zip user@server:/tmp/
-# On the server: unpack into the WP plugins directory and set permissions (example path)
-ssh user@server 'cd /var/www/html/wp-content/plugins && unzip -o /tmp/kfd-wordpress.zip && chown -R www-data:www-data kfd-wordpress && find kfd-wordpress -type d -exec chmod 755 {} \; && find kfd-wordpress -type f -exec chmod 644 {} \;'
+# from plugin/ or repo root
+cd plugin/build && zip -r ../kfd-wordpress.zip package
+# then use WP Admin → Plugins → Add New → Upload Plugin → kfd-wordpress.zip
 ```
-
-Note: adjust `user`, paths and `www-data:www-data` to match the target system.
-
-6) Post-upload — activation test
-
-- Activate the plugin in WP Admin. If something goes wrong, check admin notices; after the protective checks in
-  `plugin.php`, missing files now produce admin notices instead of fatal PHP errors.
-- If errors occur: enable `WP_DEBUG` and `WP_DEBUG_LOG` and check `wp-content/debug.log`:
-
-```php
-// in wp-config.php
-define('WP_DEBUG', true);
-define('WP_DEBUG_LOG', true);
-define('WP_DEBUG_DISPLAY', false);
-```
-
-Upload / deployment tips
-
-- Plugin directory name: If you previously deployed a version with a different folder name (for example
-  `kfd-wordpress-1`), remove or rename the old folder to avoid conflicts.
-- File permissions: Ensure files are readable by the web server (typically files 644 and directories 755).
 
 CI / releases
 
-- CI pipelines (GitHub Actions or similar) should:
-    - run `npm install`
-    - run `npm run build`
-    - create a ZIP archive and attach it as a release artifact
+- The GitHub Actions workflow produces `plugin/build/package` and uploads that directory as an artifact. The artifact
+  can
+  be downloaded from the workflow run and contains the ready-to-deploy plugin directory structure.
+- CI steps should run `npm install`, `npm run build`, prepare `plugin/build/package` (as shown above) and then upload
+  `plugin/build/package` as an artifact.
 
 Troubleshooting
 
-- Plugin will not activate: confirm `src/init.php` exists in the plugin folder; check admin notices; inspect
+- Plugin will not activate: confirm `plugin/build/package/src/init.php` exists in the package; check admin notices;
+  inspect
   `wp-content/debug.log`.
-- Fatal error due to missing file: older packaging steps may have accidentally excluded `src/` — ensure `zip.sh`
-  excludes only `node_modules` and `.git` unless explicitly required.
+- Fatal error due to missing file: older packaging steps may have accidentally excluded `src/` — ensure your
+  rsync/exclude
+  rules don't filter out `src/`.
 - Block assets not updated: confirm `npm run start` or `npm run build` completed successfully and built assets are in
-  the plugin folder used by WordPress.
+  `plugin/build/`.
 
 Further improvements / next steps (optional)
 

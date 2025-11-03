@@ -38,24 +38,36 @@ jobs:
         working-directory: ./plugin
         run: npm run build --if-present
 
-      - name: Create zip archive
+      - name: Prepare build/package folder
         working-directory: ./plugin
         run: |
-          # use the repository zip script which excludes node_modules and .git
-          if [ -x ./zip.sh ]; then
-            ./zip.sh
-          else
-            zip -r ../kfd-wordpress.zip . -x "node_modules/*" ".git/*"
+          # Clean previous package folder and create a fresh one
+          rm -rf build/package
+          mkdir -p build/package
+
+          # Copy repository files into build/package excluding development files
+          # - exclude node_modules and .git to keep the package small
+          # - exclude package.json / package-lock.json and any generated .zip files
+          # - exclude the build folder itself to avoid recursion
+          rsync -a --delete \
+            --exclude='node_modules' \
+            --exclude='.git' \
+            --exclude='build' \
+            --exclude='package.json' \
+            --exclude='package-lock.json' \
+            --exclude='*.zip' \
+            --exclude='**/*.scss' \
+            ./ build/package/
+
+      - name: Verify build contains src/init.php
+        run: |
+          if [ ! -f plugin/build/package/src/init.php ]; then
+            echo 'ERROR: plugin/build/package/src/init.php is missing in the build' && exit 1
           fi
 
-      - name: Verify ZIP contains src/init.php
-        run: |
-          unzip -l kfd-wordpress.zip | grep 'src/init.php' || (echo 'ERROR: src/init.php is missing in the ZIP' && exit 1)
-
-      - name: Upload plugin ZIP as artifact (exclude node_modules)
+      - name: Upload build/package as artifact (exclude node_modules)
         uses: actions/upload-artifact@v4
         with:
           name: kfd-wordpress
-          # upload the generated ZIP (this excludes node_modules via the zip step)
-          path: kfd-wordpress.zip
+          path: plugin/build/package
           retention-days: 7

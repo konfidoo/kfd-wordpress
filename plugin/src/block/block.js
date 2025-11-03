@@ -76,7 +76,7 @@ registerBlockType('cgb/block-konfidoo', {
             <div>
                 <InspectorControls key="setting" initialOpen={true}>
                     <PanelBody
-                        title="Konfiguration"
+                        title="Configuration"
                         initialOpen={true}
                     >
                         <PanelRow>
@@ -102,7 +102,7 @@ registerBlockType('cgb/block-konfidoo', {
                     >
                         <PanelRow>
                             <SelectControl
-                                label="Art der Einbindung"
+                                label="Embedding type"
                                 value={attributes.type}
                                 options={[
                                     {label: 'Normal', value: 'form'},
@@ -124,7 +124,7 @@ registerBlockType('cgb/block-konfidoo', {
                                 </PanelRow>
                                 <PanelRow>
                                     <TextControl
-                                        label="Untertitel"
+                                        label="Subtitle"
                                         value={attributes.configSubtitle}
                                         onChange={(value) => setAttributes({configSubtitle: value})}
                                     />
@@ -154,22 +154,24 @@ registerBlockType('cgb/block-konfidoo', {
                             <strong>Project: </strong>
                             {effectiveProjectId}
                             <br/>
-                            <strong>Konfiguration: </strong>
+                            <strong>Configuration: </strong>
                             {attributes.configurationId}
                             <br/>
-                            <a href={'https://cms.konfidoo.de/project/' + effectiveProjectId} target="_blank">
-                                Projekt öffnen</a>
+                            <a href={'https://cms.konfidoo.de/project/' + effectiveProjectId} target="_blank"
+                               rel="noopener noreferrer">
+                                Open project</a>
                             {/*<button onClick={openSettingsSidebar}>*/}
                             {/*	Activate Lasers*/}
                             {/*</button>*/}
                         </div>
                     )}
                     {!effectiveProjectId && (
-                        <div>Bitte eine Projekt ID
-                            angeben {globalProjectId ? 'oder in den Plugin-Einstellungen konfigurieren' : '(keine globale ID konfiguriert)'}</div>
+                        <div>Please enter a Project ID
+                            {globalProjectId ? ' or configure a global setting in the plugin options' : ' (No global ID configured)'}
+                        </div>
                     )}
                     {!attributes.configurationId && (
-                        <div>Bitte eine Konfigurations ID angeben</div>
+                        <div>Please enter a Configuration ID</div>
                     )}
                     {(!effectiveProjectId && !!attributes.configurationId) && (
                         <p>Open the settings sidebar to configure the integration</p>
