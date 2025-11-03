@@ -52,7 +52,7 @@ jobs:
           rsync -a --delete \
             --exclude='node_modules' \
             --exclude='.git' \
-            --exclude='build' \
+            --exclude='build/package' \
             --exclude='package.json' \
             --exclude='package-lock.json' \
             --exclude='*.zip' \
