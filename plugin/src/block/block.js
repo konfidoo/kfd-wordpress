@@ -9,7 +9,7 @@
 import './editor.scss';
 import './style.scss';
 import {InspectorControls} from '@wordpress/block-editor';
-import {PanelBody, PanelRow, SelectControl, TextControl} from '@wordpress/components';
+import {PanelBody, PanelRow, SelectControl, TextControl, ToggleControl} from '@wordpress/components';
 
 const {__} = wp.i18n; // Import __() from wp.i18n
 const {registerBlockType} = wp.blocks; // Import registerBlockType() from wp.blocks
@@ -49,6 +49,9 @@ registerBlockType('cgb/block-konfidoo', {
         type: {enum: ['form'], default: 'form'},
         projectId: {type: 'string', default: ''},
         configurationId: {type: 'string', default: ''},
+        // Darstellung — für alle Typen
+        showTitle: {type: 'boolean', default: false},
+        contentStyling: {type: 'boolean', default: true},
         // configTitle: { type: 'string', default: '' },
         // configSubtitle: { type: 'string', default: '' },
         // configBtnText: { type: 'string', default: '' },
@@ -95,6 +98,23 @@ registerBlockType('cgb/block-konfidoo', {
                                 onChange={(value) => setAttributes({configurationId: value})}
                             />
                         </PanelRow>
+                    </PanelBody>
+                    <PanelBody
+                        title="Darstellung"
+                        initialOpen={false}
+                    >
+                        <ToggleControl
+                            label="Titel anzeigen"
+                            help="Zeigt den Formular-Titel oberhalb des Formulars an."
+                            checked={attributes.showTitle}
+                            onChange={(value) => setAttributes({showTitle: value})}
+                        />
+                        <ToggleControl
+                            label="Seiten-Layout anzeigen"
+                            help="Wendet das Layout der konfidoo-Seite auf das eingebettete Formular an."
+                            checked={attributes.contentStyling}
+                            onChange={(value) => setAttributes({contentStyling: value})}
+                        />
                     </PanelBody>
                     <PanelBody
                         title="Layout"
@@ -188,17 +208,26 @@ registerBlockType('cgb/block-konfidoo', {
             return;
         }
 
+        const {configurationId, showTitle, contentStyling,
+               configTitle, configSubtitle, configBtnText, configBtnCls} = props.attributes;
+
+        // String values for custom element attributes.
+        const showTitleVal      = showTitle      ? 'true' : 'false';
+        const contentStylingVal = contentStyling ? 'true' : 'false';
+
         if (props.attributes.type === "intro") {
             return (
                 <div>
                     <kfd-intro
                         project={effectiveProjectId}
-                        configuration={props.attributes.configurationId}
-                        title={props.attributes.configTitle}
-                        subtitle={props.attributes.configSubtitle}
-                        btntext={props.attributes.configBtnText}
-                        btncls={props.attributes.configBtnCls}
+                        configuration={configurationId}
+                        title={configTitle}
+                        subtitle={configSubtitle}
+                        btntext={configBtnText}
+                        btncls={configBtnCls}
                         seamless="true"
+                        showtitle={showTitleVal}
+                        contentstyling={contentStylingVal}
                     ></kfd-intro>
                 </div>
             );
@@ -209,12 +238,14 @@ registerBlockType('cgb/block-konfidoo', {
                 <div>
                     <kfd-modal
                         project={effectiveProjectId}
-                        configuration={props.attributes.configurationId}
-                        title={props.attributes.configTitle}
-                        subtitle={props.attributes.configSubtitle}
-                        btntext={props.attributes.configBtnText}
-                        btncls={props.attributes.configBtnCls}
+                        configuration={configurationId}
+                        title={configTitle}
+                        subtitle={configSubtitle}
+                        btntext={configBtnText}
+                        btncls={configBtnCls}
                         seamless="true"
+                        showtitle={showTitleVal}
+                        contentstyling={contentStylingVal}
                     ></kfd-modal>
                 </div>
             );
@@ -224,8 +255,10 @@ registerBlockType('cgb/block-konfidoo', {
             <div>
                 <kfd-inline
                     project={effectiveProjectId}
-                    configuration={props.attributes.configurationId}
+                    configuration={configurationId}
                     seamless="true"
+                    showtitle={showTitleVal}
+                    contentstyling={contentStylingVal}
                 ></kfd-inline>
             </div>
         );

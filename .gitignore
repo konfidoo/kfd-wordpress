@@ -4,3 +4,4 @@ temp-plugin/
 *.log
 kfd-wordpress.zip
 build
+/todo.md

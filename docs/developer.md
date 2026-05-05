@@ -135,6 +135,30 @@ Troubleshooting
 - Block assets not updated: confirm `npm run start` or `npm run build` completed successfully and built assets are in
   `plugin/build/`.
 
+Admin settings (plugin/admin-settings.php)
+
+The settings page (`Einstellungen → konfidoo`) exposes the following options:
+
+| Option | WP option key | Default |
+|---|---|---|
+| Project‑ID | `kfd_project_id` | — |
+| Script‑URL | `kfd_script_url` | `https://konfidoo.de/elements/v01/main.js` |
+| Script‑Lademethode | `kfd_script_loading` | `defer` |
+
+The script URL falls back to the hardcoded default when the option is empty. The loading method is applied via the
+`script_loader_tag` filter, which works across all WordPress versions (unlike `wp_script_add_data` which only supports
+`defer`/`async` reliably since WP 6.3).
+
+Block attributes (plugin/src/block/block.js)
+
+| Attribute | Type | Default | HTML attribute |
+|---|---|---|---|
+| `projectId` | string | `''` | `project` |
+| `configurationId` | string | `''` | `configuration` |
+| `showTitle` | boolean | `false` | `showtitle` |
+| `contentStyling` | boolean | `true` | `contentstyling` |
+| `type` | enum | `'form'` | element tag (`kfd-inline` / `kfd-modal` / `kfd-intro`) |
+
 Further improvements / next steps (optional)
 
 - Add unit/integration tests for critical code paths.
@@ -145,11 +169,7 @@ Further improvements / next steps (optional)
 Useful paths / files
 
 - `plugin/plugin.php` — plugin header and PHP entry points
+- `plugin/admin-settings.php` — WordPress admin settings page
 - `plugin/src/` — Gutenberg block source files and PHP helpers
 - `plugin/build/` — production-built assets
 - `docker-compose.yaml` — local Docker setup (project root) — inspect to see service URLs and volumes
-
-If you want, I can also:
-
-- produce the release ZIP and keep it in the repo root,
-- add a small GitHub Actions workflow that builds and produces the ZIP automatically.

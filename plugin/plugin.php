@@ -45,11 +45,46 @@ if ( version_compare( PHP_VERSION, KONFIDOO_MIN_PHP, '<' ) ) {
 
 // Enqueue the Konfidoo front-end script properly instead of echoing in wp_head.
 function konfidoo_enqueue_frontend_script() {
-	if ( ! is_admin() ) {
-		wp_enqueue_script( 'konfidoo-elements', 'https://konfidoo.de/elements/v01/main.js', array(), null, false );
+	if ( is_admin() ) {
+		return;
 	}
+
+	// Use the saved script URL or fall back to the default defined in admin-settings.php.
+	$saved_url  = get_option( 'kfd_script_url', '' );
+	$script_url = ! empty( $saved_url ) ? $saved_url : 'https://konfidoo.de/elements/v01/main.js';
+
+	// In head with defer: browser starts downloading early, executes after DOM is parsed.
+	wp_enqueue_script( 'konfidoo-elements', esc_url_raw( $script_url ), array(), null, false );
 }
 add_action( 'wp_enqueue_scripts', 'konfidoo_enqueue_frontend_script' );
+
+/**
+ * Add defer/async attribute to the Konfidoo script tag via filter — works across all WP versions.
+ * wp_script_add_data() only supports these attributes reliably since WP 6.3.
+ *
+ * @param string $tag    The full script tag HTML.
+ * @param string $handle Script handle.
+ * @return string Modified script tag.
+ */
+function konfidoo_script_loader_tag( $tag, $handle ) {
+	if ( 'konfidoo-elements' !== $handle ) {
+		return $tag;
+	}
+
+	$loading = get_option( 'kfd_script_loading', 'defer' );
+
+	if ( 'defer' === $loading ) {
+		return str_replace( '<script ', '<script defer ', $tag );
+	}
+
+	if ( 'async' === $loading ) {
+		return str_replace( '<script ', '<script async ', $tag );
+	}
+
+	// 'sync' → no attribute added.
+	return $tag;
+}
+add_filter( 'script_loader_tag', 'konfidoo_script_loader_tag', 10, 2 );
 
 
 /**
