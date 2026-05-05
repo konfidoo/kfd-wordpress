@@ -1,0 +1,83 @@
+name: Release plugin
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        # Strip the leading 'v' from the tag name (e.g. v1.1.1 → 1.1.1)
+        run: echo "number=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Set plugin version in plugin.php
+        run: |
+          sed -i "s/^ \* Version:.*/ * Version: ${{ steps.version.outputs.number }}/" plugin/plugin.php
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: plugin/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('plugin/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        working-directory: ./plugin
+        run: npm ci
+
+      - name: Build plugin assets
+        working-directory: ./plugin
+        run: npm run build --if-present
+
+      - name: Prepare build/package folder
+        working-directory: ./plugin
+        run: |
+          rm -rf build/package
+          mkdir -p build/package
+          rsync -a --delete \
+            --exclude='node_modules' \
+            --exclude='.git' \
+            --exclude='build/package' \
+            --exclude='package.json' \
+            --exclude='package-lock.json' \
+            --exclude='*.zip' \
+            --exclude='**/*.scss' \
+            ./ build/package/
+
+      - name: Verify build contains src/init.php
+        run: |
+          if [ ! -f plugin/build/package/src/init.php ]; then
+            echo 'ERROR: plugin/build/package/src/init.php is missing in the build' && exit 1
+          fi
+
+      - name: Create release ZIP
+        run: |
+          cd plugin/build
+          zip -r ../../kfd-wordpress.zip package
+          cd ../..
+          echo "ZIP created: kfd-wordpress.zip ($(du -sh kfd-wordpress.zip | cut -f1))"
+
+      - name: Create GitHub Release and upload ZIP
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: kfd-wordpress.zip

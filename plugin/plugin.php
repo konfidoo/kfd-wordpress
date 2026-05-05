@@ -3,9 +3,9 @@
  * Plugin Name: Konfidoo Forms
  * Plugin URI: https://github.com/konfidoo/kfd-wordpress
  * Description: Integration of Konfidoo Forms
- * Author: Nico Blum
- * Author URI:        https://konfidoo.de
- * Version: 1.0.3
+ * Author: Nico Blumtag
+ * Author URI:  https://konfidoo.de
+ * Version: 1.1.1
  * License: GPL2+
  * License URI: https://www.gnu.org/licenses/gpl-2.0.txt
 
